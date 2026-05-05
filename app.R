@@ -84,8 +84,8 @@ server <- function(input, output) {
   
 network <- reactive({
   
-  b2s_nodes <- read.csv("data/b2snodes(Sheet1).csv")
-  b2s_edges <- read.csv("data/b2sedges_1(Sheet1).csv")
+  b2s_nodes <- read.csv("b2snodes(Sheet1).csv")
+  b2s_edges <- read.csv("b2sedges_1(Sheet1).csv")
   
   b2s_edges <- b2s_edges[-c(64, 715), ]
   
@@ -101,25 +101,48 @@ network <- reactive({
            threshold = centrality_degree(weight > 3)) #help
   b2s_net
   
+
+  
+  b2s_net <- b2s_net |> activate(nodes) |> mutate(degree = centrality_degree(weights = weight), 
+                                                  #how connected the connections are to one another (local density)
+                                                  eigenvector = centrality_eigen(weights = weight))
+  b2s_net
+
+  
+  
+})
+dataframe <- reactive({
+  b2s_nodes <- read.csv("b2snodes(Sheet1).csv")
+  b2s_edges <- read.csv("b2sedges_1(Sheet1).csv")
+  
+  b2s_edges <- b2s_edges[-c(64, 715), ]
+  
+  b2s_net <- tbl_graph(nodes = b2s_nodes, 
+                       edges= b2s_edges,
+                       directed = FALSE) 
+  
   b2s_df <- b2s_net |> activate(nodes) |> as_tibble()
   b2s_net |> activate(edges) |> as_tibble()
   b2s_df
   ggplot(b2s_df, aes(x= reorder(Label, degree), y=degree)) + 
     geom_col(fill = "purple") + 
     labs(x = "ID", y = "Degree", title = "Degree centrality of B2S Residents")
+  b2s_net <- tbl_graph(nodes = b2s_nodes, 
+                       edges= b2s_edges,
+                       directed = FALSE) 
+  
+  b2s_net <- b2s_net |> activate(nodes) |>
+    mutate(degree = centrality_degree(weights = weight),
+           betweeness_row = centrality_betweenness(normalized = FALSE),
+           betweeness_norm = centrality_betweenness(normalized = TRUE),
+           closeness = centrality_closeness(),
+           threshold = centrality_degree(weight > 3)) #help
   
   
-  
-  b2sdf <- b2s_net |> activate(nodes) |> as_tibble()
-  
-  b2s_net <- b2s_net |> activate(nodes) |> mutate(degree = centrality_degree(weights = weight), 
-                                                  #how connected the connections are to one another (local density)
-                                                  eigenvector = centrality_eigen(weights = weight))
+  b2s_df <- b2s_net |> activate(nodes) |> as_tibble()
   b2s_net
-  
-  
+  b2s_df
 })
-
 
 
 # now let's get it visualized and reactive to our choice from above! 
@@ -139,6 +162,7 @@ output$example_network <- renderPlot({
 
 # CARD 3 
 output$histogram <- renderPlot({
+  b2s_df <- dataframe()
   ggplot(b2s_df, aes(x= reorder(Label, degree), y=degree)) + 
     geom_col(fill = "lightblue") + 
     labs(x = "ID", y = "Degree", title = "Degree centrality of B2S Residents")
