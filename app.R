@@ -21,17 +21,17 @@ ui <-fluidPage(
   
     
     card(
-      card_header("For my project, I am measuring how connected the people who live in my floor section, B2S are. 
+      card_header("     For my project, I am measuring how connected the people who live in my floor section, B2S are. 
 Welcome to my Shiny App! Toggle between the different thresholds of my network to see the differences! This compares 
 the entire network to just a subset of the nodes with highest degree centrality. To see the degree centrality of all 
 the nodes in a clearer way, scroll down to the histogram, which compares each node to each other. To see a couple of 
-other measures about this network, click on the different options right below this intro! You can see the eigenvector 
-measure, how central a node is in the network based off the degree centrality of the nodes it's connected to. You can 
-also see the assortativity of this network by gender! That will tell you whether or not gender impacts the strength of
-ties of the B2S residents, if men are more likely to be more connected with other men, and women with other women. 
+other measures about this network, click on the different options right below this intro! You can see the average degree 
+centrality and average betweeness centrality measure, the sum of the number of shortest paths (edges) to connect a node 
+from every node in the network. You can also see the assortativity of this network by gender! That will tell you whether 
+or not gender impacts the strength of ties of the B2S residents, if men are more likely to be more connected with other men, and women with other women. 
 "),
       
-      "To collect my data for my project on measuring how connected my floor is, Battell 2nd floor south (B2S), 
+      "     To collect my data for my project on measuring how connected my floor is, Battell 2nd floor south (B2S), 
       I conducted a survey that asked the residents who they were, and how often they interacted with each one of
       the other residents. I sent out this survey via email and our floor GroupMe and sent out multiple reminders 
       over the course of a week to get responses. I asked them their names (which then got translated into number 
@@ -40,12 +40,13 @@ ties of the B2S residents, if men are more likely to be more connected with othe
       in the last week. I then translated those number of interactions to a weight from 1-5, 1 being 0-1 interactions,
       2 being 2-3 interactions and so forth. "),
     card(
-      card_header("Choose what measure you want to see!"),
+      card_header("
+                  Choose what measure you want to see!"),
       selectInput("select", 
                   "select an option", 
                   choices = list("Assortativity" = "-0.02631579", 
-                                 "Degree Centrality" = "B",
-                  "Eigenvector" = "C"),
+                                 "Average Degree Centrality" = "38",
+                  "Average Betweenness Centrality" = "4.734197"),
                   selected =1), 
       textOutput("ourVariable")
       ), 
