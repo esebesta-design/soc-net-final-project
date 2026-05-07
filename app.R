@@ -15,6 +15,7 @@ library(visNetwork)
 # how people can use the app. 
 
 ui <-fluidPage(
+  theme = bs_theme(bg = "lightblue", fg = "white"),
   
   titlePanel("Does proximity play a role in how freshman make their friends?"),
   
@@ -39,11 +40,22 @@ or not gender impacts the strength of ties of the B2S residents, if men are more
       listed each other resident with the options of having interacted with them 0-1 times, 2-3, 4-6, 7-9, or 10+ times
       in the last week. I then translated those number of interactions to a weight from 1-5, 1 being 0-1 interactions,
       2 being 2-3 interactions and so forth. "),
+  card(
+    card_header( " Findings: I found that my hall is not very connected. Most people don't really interact with each other in B2S. 
+  The people who have higher degree centralitys are the more friendly residents who typically hang out in the lounges and hallways.
+ I also found that gender and major does not play a role in whether or not people are connected in my hall due to the negative 
+  assortitivity. "
+      
+    )
+  ),
+ 
+  
+  #add findings
     card(
       card_header("
                   Choose what measure you want to see!"),
-      selectInput("select", 
-                  "select an option", 
+      selectInput("Select", 
+                  "Select an option", 
                   choices = list("Assortativity" = "-0.02631579", 
                                  "Average Degree Centrality" = "38",
                   "Average Betweenness Centrality" = "4.734197"),
@@ -58,16 +70,18 @@ or not gender impacts the strength of ties of the B2S residents, if men are more
                      choices = list("Normal Degree Centrality" = "degree", 
                                     "Thresholded Degree Centrality" = "threshold"), 
                      selected = 1), 
-         plotOutput("example_network"), height = "400px"),
+         selectInput("weight", 
+                     "Choose a threshold",
+                     choices = list("0-1" =1, "2-3" =2, "4-6" = 3, "7-9" =4, "10+" =5), selected=1),
+         plotOutput("example_network", height = "400px"), 
+         plotOutput("example_network2")),
     
     card(
       card_header("Histogram"),
       plotOutput("histogram")
-    
-    
-    ),
+    )
 )
-
+#tabPanel()
 
 # Section 2. The server section defines how our app works. Here's where we will put all the network analysis. 
 
@@ -150,22 +164,32 @@ dataframe <- reactive({
 
 output$example_network <- renderPlot({
   b2s_net <- network() 
-  
-  p<- ggraph(b2s_net, layout= "auto")+
+  p1<- 
+    ggraph(b2s_net, layout= "auto")+
     geom_edge_link(color = "darkgrey")+
     geom_node_point(aes(size = .data[[input$size]]), color = "pink")+
     geom_node_text(aes(label = Label), color = "purple")
   
-  p
+  p1
   
 
 })
-
+output$example_network2 <- renderPlot({
+  b2s_net <- network() 
+  
+  p2 <- b2s_net |> activate(edges) |>  filter(weight > input$weight) |>
+    ggraph(layout= "auto")+
+    geom_edge_link(color = "darkgrey")+
+    geom_node_point(color = "pink")+
+    geom_node_text(aes(label = Label), color = "purple")
+  
+  p2
+})
 # CARD 3 
 output$histogram <- renderPlot({
   b2s_df <- dataframe()
   ggplot(b2s_df, aes(x= reorder(Label, degree), y=degree)) + 
-    geom_col(fill = "lightblue") + 
+    geom_col(fill = "darkblue") + 
     labs(x = "ID", y = "Degree", title = "Degree centrality of B2S Residents")
 })
 
