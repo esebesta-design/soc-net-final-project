@@ -22,14 +22,14 @@ ui <-fluidPage(
   
     
     card(
-      card_header("     For my project, I am measuring how connected the people who live in my floor section, B2S are. 
-Welcome to my Shiny App! Toggle between the different thresholds of my network to see the differences! This compares 
-the entire network to just a subset of the nodes with highest degree centrality. To see the degree centrality of all 
-the nodes in a clearer way, scroll down to the histogram, which compares each node to each other. To see a couple of 
-other measures about this network, click on the different options right below this intro! You can see the average degree 
-centrality and average betweeness centrality measure, the sum of the number of shortest paths (edges) to connect a node 
-from every node in the network. You can also see the assortativity of this network by gender! That will tell you whether 
-or not gender impacts the strength of ties of the B2S residents, if men are more likely to be more connected with other men, and women with other women. 
+      card_header("    Welcome to my Shiny App! For my project, I am measuring how connected the people who live in my floor section, B2S are. 
+Toggle between the different thresholds of my network to see the differences! This compares the entire network to just a 
+subset of nodes connected to each other by a weight of your choice. To see the degree centrality of all the nodes in a clearer way, 
+scroll down to the histogram, which compares each node to each other. To see a couple of other measures about this network, 
+click on the different options right below this intro! You can see the average degree centrality and average betweeness centrality 
+measure, the sum of the number of shortest paths (edges) to connect a node from every node in the network. You can also see 
+the assortativity of this network by gender! That will tell you whether or not gender impacts the strength of ties of the B2S residents, 
+if men are more likely to be more connected with other men, and women with other women. 
 "),
       
       "     To collect my data for my project on measuring how connected my floor is, Battell 2nd floor south (B2S), 
@@ -38,8 +38,7 @@ or not gender impacts the strength of ties of the B2S residents, if men are more
       over the course of a week to get responses. I asked them their names (which then got translated into number 
       ids to ensure anonymity), their gender identities, potential major, STEM/humanities/undecided, and then 
       listed each other resident with the options of having interacted with them 0-1 times, 2-3, 4-6, 7-9, or 10+ times
-      in the last week. I then translated those number of interactions to a weight from 1-5, 1 being 0-1 interactions,
-      2 being 2-3 interactions and so forth. "),
+      in the last week. "),
   card(
     card_header( " Findings: I found that my hall is not very connected. Most people don't really interact with each other in B2S. 
   The people who have higher degree centralitys are the more friendly residents who typically hang out in the lounges and hallways.
@@ -54,7 +53,7 @@ or not gender impacts the strength of ties of the B2S residents, if men are more
     card(
       card_header("
                   Choose what measure you want to see!"),
-      selectInput("Select", 
+      selectInput("select", 
                   "Select an option", 
                   choices = list("Assortativity" = "-0.02631579", 
                                  "Average Degree Centrality" = "38",
@@ -65,13 +64,14 @@ or not gender impacts the strength of ties of the B2S residents, if men are more
     
     
     card(card_header("Here's a network!"),
-         selectInput("size",
-                     "Choose a measure", 
-                     choices = list("Normal Degree Centrality" = "degree", 
-                                    "Thresholded Degree Centrality" = "threshold"), 
-                     selected = 1), 
+        # selectInput("size",
+                #    "Choose a measure", 
+                   # choices = list("Normal Degree Centrality" = "degree", 
+                                 #   "Thresholded Degree Centrality" = "threshold"), 
+                   #  selected = 1
+                   # ), 
          selectInput("weight", 
-                     "Choose a threshold",
+                     "Choose a threshold based on # of interactions",
                      choices = list("0-1" =1, "2-3" =2, "4-6" = 3, "7-9" =4, "10+" =5), selected=1),
          plotOutput("example_network", height = "400px"), 
          plotOutput("example_network2")),
@@ -167,7 +167,7 @@ output$example_network <- renderPlot({
   p1<- 
     ggraph(b2s_net, layout= "auto")+
     geom_edge_link(color = "darkgrey")+
-    geom_node_point(aes(size = .data[[input$size]]), color = "pink")+
+    geom_node_point(color = "pink")+
     geom_node_text(aes(label = Label), color = "purple")
   
   p1
